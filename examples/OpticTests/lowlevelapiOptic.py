@@ -2,8 +2,8 @@ import sys
 import random
 import os
 
-from animalai.envs.environment import AnimalAIEnvironment
-from animalai.envs.braitenberg import Braitenberg
+from environmentOptic import AnimalAIEnvironment
+from braitenbergOptic import Braitenberg
 
 def run_agent_single_config(configuration_file: str) -> None:
     """
@@ -11,23 +11,23 @@ def run_agent_single_config(configuration_file: str) -> None:
     See https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Python-API.md for details.
     For demo purposes uses a simple braitenberg vehicle-inspired agent that solves most tasks from category 1.
     """
-    env_path = "../env/AnimalAI"
+    env_path = "../../env/AnimalAI"
     
     configuration = configuration_file
-    # configuration = "../configs/tests/optic_test.yaml"
+    # configuration = "../../configs/tests/optic_test_noWalls.yaml"
 
     totalRays = 9
     env = AnimalAIEnvironment(
         file_name=env_path,
         arenas_configurations=configuration,
-        seed = 0,
         worker_id=random.randint(0, 65500),
+        seed = 0,
         play=False,
         useCamera=False, #The Braitenberg agent works with raycasts
         useRayCasts=True,
         raysPerSide=int((totalRays-1)/2),
         rayMaxDegrees = 30,
-        inference=True,
+        # inference=True,
     )
     print("Environment Loaded")
 
@@ -35,9 +35,7 @@ def run_agent_single_config(configuration_file: str) -> None:
     behavior = list(env.behavior_specs.keys())[0] # by default should be AnimalAI?team=0
     
     firststep = True
-    for _episode in range(5): #Run episodes with the Braitenberg-style agent
-        braitenbergAgent.prev_action = braitenbergAgent.actions.NOOP
-        braitenbergAgent.new_action = braitenbergAgent.actions.NOOP
+    for _episode in range(3): #Run episodes with the Braitenberg-style agent
         if firststep:
             env.step() # Need to make a first step in order to get an observation.
             firstep = False
@@ -48,7 +46,7 @@ def run_agent_single_config(configuration_file: str) -> None:
             raycasts = env.get_obs_dict(dec.obs)["rays"] # Get the raycast data
             # print(braitenbergAgent.prettyPrint(raycasts)) #print raycasts in more readable format
             action = braitenbergAgent.get_action(raycasts)
-            # print(action)
+            # print(braitenbergAgent.state, action)
             env.set_actions(behavior, action.action_tuple)
             env.step()      
             dec, term = env.get_steps(behavior)
@@ -68,7 +66,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         configuration_file = sys.argv[1]
     else:
-        competition_folder = "../configs/competition/"
+        competition_folder = "../../configs/competition/"
         configuration_files = os.listdir(competition_folder)
         configuration_random = random.randint(0, len(configuration_files))
         configuration_file = (

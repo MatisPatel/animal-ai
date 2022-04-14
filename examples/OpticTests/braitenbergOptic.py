@@ -1,12 +1,14 @@
 from animalai.envs.actions import AAIActions, AAIAction
 from animalai.envs.raycastparser import RayCastParser
 from animalai.envs.raycastparser import RayCastObjects
+import random
 
 class Braitenberg():
     """Implements a simple Braitenberg vehicle agent that heads towards food
     Can change the number of rays but only responds to GOODGOALs, GOODGOALMULTI and BADGOAL"""
     def __init__(self, no_rays):
         self.no_rays = no_rays
+        self.state = 0 # [0, 1, 2, 3] left right forward back
         assert(self.no_rays % 2 == 1), "Only supports odd number of rays (but environment should only allow odd number"
         self.listOfObjects = [RayCastObjects.GOODGOAL, RayCastObjects.GOODGOALMULTI, RayCastObjects.BADGOAL, RayCastObjects.IMMOVABLE, RayCastObjects.MOVABLE]
         self.raycast_parser = RayCastParser(self.listOfObjects, self.no_rays)
@@ -36,16 +38,25 @@ class Braitenberg():
         elif self.ahead(obs, RayCastObjects.BADGOAL):
             newAction = self.actions.BACKWARDS
         elif self.left(obs, RayCastObjects.BADGOAL):
-            newAction = self.actions.BACKWARDSLEFT
+            newAction = self.actions.LEFT
         elif self.right(obs, RayCastObjects.BADGOAL):
-            newAction = self.actions.BACKWARDSRIGHT
+            newAction = self.actions.RIGHT
         else:
-            if self.prev_action == self.actions.NOOP or self.prev_action == self.actions.BACKWARDS:
-                newAction = self.actions.LEFT
-            else:
-                newAction = self.prev_action    
+            newAction = self.randomWalk()
+            # if self.prev_action == self.actions.NOOP or self.prev_action == self.actions.BACKWARDS:
+            #     newAction = self.actions.LEFT
+            # else:
+            #     newAction = self.prev_action    
         self.prev_action = newAction
         return newAction
+
+    def randomWalk(self):
+        states  = [0, 1, 2, 3]
+        stateTrans = [0.1, 0.1, 0.1, 0.8]
+        # from eachs tate transition to a diff state with P 0.1
+        if random.random() < stateTrans[self.state]:
+            self.state = random.choice(states)
+        return [self.actions.LEFT, self.actions.RIGHT, self.actions.FORWARDS, self.actions.BACKWARDS][self.state]
 
     def ahead(self, obs, object):
         """Returns true if the input object is ahead of the agent"""

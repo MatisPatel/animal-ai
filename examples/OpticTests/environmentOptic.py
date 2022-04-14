@@ -1,4 +1,5 @@
 import uuid
+import random
 from typing import NamedTuple, Dict, Optional, List
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.rpc_communicator import UnityTimeOutException

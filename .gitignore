@@ -1,6 +1,10 @@
 results/*
+models/*
+dqn_tensorboard/*
 logs/
 __pycache__/
+*.pth
+*.zip
 
 # Builds
 *.apk
@@ -14,3 +18,4 @@ __pycache__/
 *.pyc
 *.vscode
 *.pytest_cache/
+*/dqn_tensorboard/*

@@ -7,7 +7,7 @@ import sys
 import random
 import os
 
-def watch_agent_single_config(configuration_file):
+def rand_agent_single_config(configuration_file):
 
     # AnimalAI settings must be the same as used for training except with inference = true
     # best to load from a common config file
@@ -25,12 +25,12 @@ def watch_agent_single_config(configuration_file):
 
     env = UnityToGymWrapper(aai_env, uint8_visual=False, allow_multiple_obs=True, flatten_branched=True)
     runname = "testrun" #Assume you have your model saved in results/runname/
-    model_no = "60000"
+    model_no = "70000"
 
     model = DQN.load(F"results/{runname}/model_{model_no}")
     obs = env.reset()
     while True:
-        action, _states = model.predict(obs[0], deterministic=True)
+        action = random.randint(0, 8)
         obs, reward, done, info = env.step(action)
         # print(obs)
         env.render()
@@ -51,4 +51,4 @@ if __name__ == "__main__":
         configuration_file = (
             competition_folder + configuration_files[configuration_random]
         )
-    watch_agent_single_config(configuration_file=configuration_file)
+    rand_agent_single_config(configuration_file=configuration_file)

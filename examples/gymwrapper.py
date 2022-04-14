@@ -13,6 +13,7 @@ def train_agent_single_config(configuration_file):
 
     aai_env = AnimalAIEnvironment(
         seed = 123,
+        worker_id=random.randint(0, 6550),
         file_name="../env/AnimalAI",
         arenas_configurations=configuration_file,
         play=False,
@@ -33,13 +34,13 @@ def train_agent_single_config(configuration_file):
     #     return _thunk
     # env = DummyVecEnv([make_env()])
     env = UnityToGymWrapper(aai_env, uint8_visual=True, allow_multiple_obs=False, flatten_branched=True)
-    runname = "inserrunname"
+    runname = "testrun"
 
     policy_kwargs = dict(activation_fn=th.nn.ReLU)
-    model = DQN("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, tensorboard_log=("./dqn_tensorboard/" + runname))
+    model = DQN("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, tensorboard_log=("./dqn_tensorboard/" + runname), buffer_size=1000000, optimize_memory_usage=True)
 
-    no_saves = 100
-    no_steps = 1000000
+    no_saves = 10
+    no_steps = 10000
     reset_num_timesteps = True
     for i in range(no_saves):
         model.learn(no_steps, reset_num_timesteps=reset_num_timesteps)
